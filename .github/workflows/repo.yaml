@@ -50,7 +50,7 @@ jobs:
           echo "Server = file://${GITHUB_WORKSPACE} " >> /etc/pacman.conf
           pacman -Sy --noconfirm
           # 在此处安装其他需要的包
-          for pkg in archlinux-java-run photoprism-bin etesync-dav jellyfin ledger-udev ledger-live-bin paru zoom google-chrome ipmiview jackett sonarr radarr laminar mediamtx-bin vial-appimage reposilite code-marketplace
+          for pkg in emacs-git
           do
             echo "### Package ${pkg}"
             sudo -u auruser aur sync --noconfirm --noview --database ${REPO_IDENTIFIER} --root ${GITHUB_WORKSPACE} ${pkg} || echo "!!! Package ${pkg} failed"
@@ -142,7 +142,7 @@ jobs:
             echo "SigLevel = Optional TrustAll" >> /etc/pacman.conf
             echo "Server = file:///workspace " >> /etc/pacman.conf
             pacman -Sy --noconfirm
-            sudo -u auruser aur sync --noconfirm --noview --database ${REPO_IDENTIFIER} --root /workspace archlinux-java-run
+            sudo -u auruser aur sync --noconfirm --noview --database ${REPO_IDENTIFIER} --root /workspace emacs-git
             chmod -R 777 /workspace
 
       - name: Remove symbolic links
