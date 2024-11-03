@@ -99,7 +99,6 @@ jobs:
       matrix:
         include:
           - arch: aarch64
-          - arch: armv7
 
     steps:
       - name: Set variables
