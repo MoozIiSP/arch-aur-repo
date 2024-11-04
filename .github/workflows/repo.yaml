@@ -186,9 +186,9 @@ jobs:
               echo "### Override architecture to aarch64"
               ls -la
               if [[ "${{ matrix.arch }}" == "aarch64" ]]; then
-                sudo -u auruser sed -i "s/^arch=.*/arch=(x86_64 aarch64)/" PKGBUILD
+                sudo -E sed -i "s/^arch=.*/arch=(x86_64 aarch64)/" PKGBUILD
               elif [[ "${{ matrix.arch }}" == "armv7" ]]; then
-                sudo -u auruser sed -i "s/^arch=.*/arch=(armv7)/" PKGBUILD
+                sudo -E sed -i "s/^arch=.*/arch=(armv7)/" PKGBUILD
               fi
               sudo -u auruser aur build --noconfirm --syncdeps --clean
               popd
