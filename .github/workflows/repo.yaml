@@ -193,6 +193,8 @@ jobs:
               popd
               popd
               ls /tmp/build/$pkg -la
+              ls -la /tmp/build
+              ls -la /workspace
               cp -v /tmp/build/$pkg/$pkg-*.pkg.* /workspace
               repo-add /workspace/${REPO_IDENTIFIER}.db.tar.gz /workspace/$pkg-*.pkg.*
             done
