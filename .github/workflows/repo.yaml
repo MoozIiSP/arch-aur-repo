@@ -183,7 +183,7 @@ jobs:
               pushd /tmp/build
               sudo -u auruser aur fetch $pkg
               pushd /tmp/build/$pkg
-              echo "### Override architecture to aarch64
+              echo "### Override architecture to aarch64"
               if [[ "${{ matrix.arch }}" == "aarch64" ]]; then
                 sed -i "s/^arch=.*/arch=(x86_64 aarch64)/" PKGBUILD
               elif [[ "${{ matrix.arch }}" == "armv7" ]]; then
