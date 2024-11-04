@@ -156,7 +156,7 @@ jobs:
             echo "# local repository (required by aur tools to be set up)" >> /etc/pacman.conf
             echo "[${REPO_IDENTIFIER}]" >> /etc/pacman.conf
             echo "SigLevel = Optional TrustAll" >> /etc/pacman.conf
-            echo "Server = file://${GITHUB_WORKSPACE} " >> /etc/pacman.conf
+            echo "Server = file://workspace " >> /etc/pacman.conf
             pacman -Sy --noconfirm
             PACKAGES=(emacs-git)
             for pkg in "${PACKAGES[@]}"; do
