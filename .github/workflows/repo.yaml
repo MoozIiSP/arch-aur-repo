@@ -143,9 +143,9 @@ jobs:
           dockerRunArgs: |
             --volume "${{ runner.temp }}:/workspace"
           #   --volume "${HOME}/.ccache:/root/.ccache"
-          # install: |
-          #   pacman -Syyu --noconfirm
-          #   pacman -S --noconfirm base-devel sudo ccache bash
+          install: |
+            pacman -Syyu --noconfirm
+            pacman -S --noconfirm base-devel sudo ccache bash
           #   update-ccache-symlinks
           #   echo 'export PATH="/usr/lib/ccache:$PATH"' | tee -a ~/.bashrc
           env: |
@@ -183,9 +183,9 @@ jobs:
               pushd /tmp/build/$pkg
               echo "### Override architecture to aarch64"
               if [[ "${{ matrix.arch }}" == "aarch64" ]]; then
-                sed -i "s/^arch=.*/arch=(x86_64 aarch64)/" PKGBUILD
+                sudo -u auruser sed -i "s/^arch=.*/arch=(x86_64 aarch64)/" PKGBUILD
               elif [[ "${{ matrix.arch }}" == "armv7" ]]; then
-                sed -i "s/^arch=.*/arch=(armv7)/" PKGBUILD
+                sudo -u auruser sed -i "s/^arch=.*/arch=(armv7)/" PKGBUILD
               fi
               sudo -u auruser aur build --noconfirm --syncdeps --clean
               popd
