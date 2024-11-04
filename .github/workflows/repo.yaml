@@ -172,7 +172,7 @@ jobs:
             echo "[${REPO_IDENTIFIER}]" >> /etc/pacman.conf
             echo "SigLevel = Optional TrustAll" >> /etc/pacman.conf
             echo "Server = file:///workspace " >> /etc/pacman.conf
-            pacman -Sy --noconfirm --no-lock
+            pacman -Sy --noconfirm
             PACKAGES=(emacs-git)
             for pkg in "${PACKAGES[@]}"; do
               echo "### Processing package: $pkg"
