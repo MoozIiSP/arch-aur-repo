@@ -179,7 +179,7 @@ jobs:
               echo "### Fetching package: $pkg"
               mkdir -p /tmp/build
               pushd /tmp/build
-              sudo -u auruser aur fetch $pkg
+              aur fetch $pkg
               pushd /tmp/build/$pkg
               echo "### Override architecture to aarch64"
               if [[ "${{ matrix.arch }}" == "aarch64" ]]; then
