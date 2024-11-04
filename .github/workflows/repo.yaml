@@ -118,6 +118,7 @@ jobs:
             echo "release_exists=true" >> $GITHUB_OUTPUT
           else
             echo "release_exists=false" >> $GITHUB_OUTPUT
+          fi
 
       - name: Exit if release exists
         if: steps.check_release.outputs.release_exists == 'true'
