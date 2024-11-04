@@ -172,14 +172,14 @@ jobs:
             echo "[${REPO_IDENTIFIER}]" >> /etc/pacman.conf
             echo "SigLevel = Optional TrustAll" >> /etc/pacman.conf
             echo "Server = file:///workspace " >> /etc/pacman.conf
-            pacman -Sy --noconfirm
+            pacman -Sy --noconfirm --no-lock
             PACKAGES=(emacs-git)
             for pkg in "${PACKAGES[@]}"; do
               echo "### Processing package: $pkg"
               echo "### Fetching package: $pkg"
               mkdir -p /tmp/build
               pushd /tmp/build
-              aur fetch $pkg
+              sudo -u auruser aur fetch $pkg
               pushd /tmp/build/$pkg
               echo "### Override architecture to aarch64"
               if [[ "${{ matrix.arch }}" == "aarch64" ]]; then
@@ -187,7 +187,7 @@ jobs:
               elif [[ "${{ matrix.arch }}" == "armv7" ]]; then
                 sed -i "s/^arch=.*/arch=(armv7)/" PKGBUILD
               fi
-              aur build --noconfirm --syncdeps --clean
+              sudo -u auruser aur build --noconfirm --syncdeps --clean
               popd
               popd
               cp -v /tmp/build/$pkg/$pkg-*.pkg.* /workspace
