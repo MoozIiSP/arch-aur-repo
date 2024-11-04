@@ -181,12 +181,9 @@ jobs:
               echo "### Processing package: $pkg"
               echo "### Fetching package: $pkg"
               pushd /tmp/build
-              ls -la
               sudo -u auruser aur fetch $pkg
-              ls -la
               pushd /tmp/build/$pkg
-              echo "### Override architecture to aarch64"
-              ls -la
+              echo "### Override architecture to aarch64
               if [[ "${{ matrix.arch }}" == "aarch64" ]]; then
                 sed -i "s/^arch=.*/arch=(x86_64 aarch64)/" PKGBUILD
               elif [[ "${{ matrix.arch }}" == "armv7" ]]; then
@@ -195,7 +192,7 @@ jobs:
               sudo -u auruser aur build --noconfirm --syncdeps --clean
               popd
               popd
-              ls /tmp/builf/$pkg
+              ls /tmp/build/$pkg
               cp -v /tmp/build/$pkg/$pkg-*.pkg.* /workspace
               repo-add /workspace/${REPO_IDENTIFIER}.db.tar.gz /workspace/$pkg-*.pkg.*
             done
