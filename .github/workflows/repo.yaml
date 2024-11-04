@@ -143,9 +143,9 @@ jobs:
           dockerRunArgs: |
             --volume "${{ runner.temp }}:/workspace"
           #   --volume "${HOME}/.ccache:/root/.ccache"
-          install: |
-            pacman -Syyu --noconfirm
-            pacman -S --noconfirm base-devel sudo ccache bash
+          # install: |
+          #   pacman -Syyu --noconfirm
+          #   pacman -S --noconfirm base-devel sudo ccache bash
           #   update-ccache-symlinks
           #   echo 'export PATH="/usr/lib/ccache:$PATH"' | tee -a ~/.bashrc
           env: |
