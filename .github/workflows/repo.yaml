@@ -176,7 +176,7 @@ jobs:
             
             mkdir -p /tmp/build
             chmod -R 777 /tmp/build
-            PACKAGES=(emacs-git)
+            PACKAGES=(hello)
             for pkg in "${PACKAGES[@]}"; do
               echo "### Processing package: $pkg"
               echo "### Fetching package: $pkg"
@@ -195,6 +195,7 @@ jobs:
               sudo -u auruser aur build --noconfirm --syncdeps --clean
               popd
               popd
+              ls /tmp/builf/$pkg
               cp -v /tmp/build/$pkg/$pkg-*.pkg.* /workspace
               repo-add /workspace/${REPO_IDENTIFIER}.db.tar.gz /workspace/$pkg-*.pkg.*
             done
