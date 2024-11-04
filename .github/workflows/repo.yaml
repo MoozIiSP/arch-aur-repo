@@ -154,8 +154,8 @@ jobs:
           shell: /bin/sh
           run: |
             echo "::set-output name=arch::$(uname -m)"
-            #pacman -Syyu --noconfirm
-            #pacman -S --noconfirm base-devel sudo
+            pacman -Syyu --noconfirm
+            pacman -S --noconfirm base-devel sudo
             echo 'auruser ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/auruser
             useradd -m auruser
             cd /tmp
