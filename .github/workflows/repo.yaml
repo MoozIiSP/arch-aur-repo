@@ -175,6 +175,8 @@ jobs:
               aur build --noconfirm --syncdeps --clean
               popd
               popd
+              cp -v /tmp/build/$pkg/$pkg-*.pkg.* /workspace
+              repo-add /workspace/${REPO_IDENTIFIER}.db.tar.gz /workspace/$pkg-*.pkg.*
             done
             chmod -R 777 /workspace
           
