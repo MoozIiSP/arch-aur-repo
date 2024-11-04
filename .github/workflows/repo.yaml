@@ -71,7 +71,7 @@ jobs:
         uses: cb80/delrel@latest
         with:
           tag: ${{ steps.prepare.outputs.arch }}
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.TOKEN }}
 
       - name: Upload release
         uses: ncipollo/release-action@v1
@@ -89,7 +89,7 @@ jobs:
             ${{ github.workspace }}/*
           draft: false
           prerelease: false
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.TOKEN }}
 
   build-arm:
     runs-on: ubuntu-latest
@@ -113,7 +113,7 @@ jobs:
         with:
           arch: ${{ matrix.arch }}
           distro: archarm_latest
-          githubToken: ${{ secrets.GITHUB_TOKEN }}
+          githubToken: ${{ secrets.TOKEN }}
           dockerRunArgs: |
             --volume "${{ runner.temp }}:/workspace"
           env: |
@@ -155,7 +155,7 @@ jobs:
         uses: cb80/delrel@latest
         with:
           tag: ${{ steps.prepare.outputs.arch }}
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.TOKEN }}
 
       - name: Upload release
         uses: ncipollo/release-action@v1
@@ -173,4 +173,4 @@ jobs:
             ${{ runner.temp }}/*
           draft: false
           prerelease: false
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.TOKEN }}
