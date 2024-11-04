@@ -101,6 +101,13 @@ jobs:
           - arch: aarch64
 
     steps:
+      - name: Setup cache
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.ccache
+          key: build_ubuntu-18.04_${{ matrix.arch }}
+
       - name: Set variables
         id: set-vars
         run: |
@@ -131,16 +138,24 @@ jobs:
           arch: ${{ matrix.arch }}
           distro: archarm_latest
           githubToken: ${{ secrets.TOKEN }}
+          setup: |
+            mkdir -p ~/.ccache
           dockerRunArgs: |
             --volume "${{ runner.temp }}:/workspace"
+            --volume "${HOME}/.ccache:/root/.ccache"
+          install: |
+            pacman -Syyu --noconfirm
+            pacman -S --noconfirm base-devel sudo ccache bash
+            update-ccache-symlinks
+            echo 'export PATH="/usr/lib/ccache:$PATH"' | tee -a ~/.bashrc
           env: |
             PKGEXT: .pkg.tar.zst
             REPO_IDENTIFIER: ${{ steps.set-vars.outputs.repo-id }}
-          shell: /bin/sh
+          shell: /bin/bash
           run: |
             echo "::set-output name=arch::$(uname -m)"
-            pacman -Syyu --noconfirm
-            pacman -S --noconfirm base-devel sudo
+            #pacman -Syyu --noconfirm
+            #pacman -S --noconfirm base-devel sudo
             echo 'auruser ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/auruser
             useradd -m auruser
             cd /tmp
