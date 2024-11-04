@@ -124,77 +124,59 @@ jobs:
         if: steps.check_release.outputs.release_exists == 'true'
         run: echo "Release already exists. Skipping build."
 
-      - name: Install necessary packages
-        if: steps.check_release.outputs.release_exists != 'true'
-        run: |
-          pacman -Syu --noconfirm
-          pacman -S --noconfirm base-devel sudo git curl
-
-      - name: Set up sudoers
-        if: steps.check_release.outputs.release_exists != 'true'
-        run: |
-          echo 'auruser ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/auruser
-          useradd -m auruser
-
-      - name: Install aurutils
-        if: steps.check_release.outputs.release_exists != 'true'
-        run: |
-          curl --output aurutils.tar.gz https://aur.archlinux.org/cgit/aur.git/snapshot/aurutils.tar.gz
-          tar xf aurutils.tar.gz
-          chmod -R 777 /tmp/aurutils
-          cd aurutils
-          sudo -u auruser makepkg --syncdeps --noconfirm
-          pacman -U --noconfirm aurutils-*.pkg.*
-          cd ..
-          rm -rf aurutils aurutils.tar.gz
-      
-      - name: Clone, modify, and build packages
-        if: steps.check_release.outputs.release_exists != 'true'
-        run: |
-          PACKAGES=(emacs-git)
-          for pkg in "${PACKAGES[@]}"; do
-            echo "### Processing package: $pkg"
-            mkdir -p build/$pkg
-            cd build/$pkg
-            aur fetch $pkg
-            cd $pkg
-            if [[ "${{ matrix.arch }}" == "aarch64" ]]; then
-              sed -i "s/^arch=.*/arch=(x86_64 aarch64)/" PKGBUILD
-            elif [[ "${{ matrix.arch }}" == "armv7" ]]; then
-              sed -i "s/^arch=.*/arch=(armv7)/" PKGBUILD
-            fi
-            # 验证修改是否成功
-            grep "^arch=" PKGBUILD
-            # 构建包
-            aur build --noconfirm --syncdeps --clean
-            # 返回工作目录
-            cd ../../../
-          done
-
-      - name: Verify PKGBUILD arch
-        if: steps.check_release.outputs.release_exists != 'true'
-        run: |
-          PACKAGES=(emacs-git)
-          for pkg in "${PACKAGES[@]}"; do
-            echo "Verifying arch in build/$pkg/$pkg/PKGBUILD"
-            grep "^arch=" build/$pkg/$pkg/PKGBUILD
-          done
-
-      - name: Add built packages to repository
-        if: steps.check_release.outputs.release_exists != 'true'
-        run: |
-          REPO_IDENTIFIER="${{ steps.set-vars.outputs.repo-id }}"
-          for pkg in "${PACKAGES[@]}"; do
-            pacman -U --noconfirm build/$pkg/${pkg}-*.pkg.tar.zst
-            repo-add ${REPO_IDENTIFIER}.db.tar.gz build/$pkg/${pkg}-*.pkg.tar.zst
-          done
-          cp ${REPO_IDENTIFIER}.db.tar.gz ${REPO_IDENTIFIER}.files.tar.gz $GITHUB_WORKSPACE/
-          chmod -R 777 ${GITHUB_WORKSPACE}
-          echo "# local repository (required by aur tools to be set up)" >> /etc/pacman.conf
-          echo "[${REPO_IDENTIFIER}]" >> /etc/pacman.conf
-          echo "SigLevel = Optional TrustAll" >> /etc/pacman.conf
-          echo "Server = file://${GITHUB_WORKSPACE} " >> /etc/pacman.conf
-          pacman -Sy --noconfirm
+      - name: Prepare repo
+        id: prepare
+        uses: uraimo/run-on-arch-action@v2
+        with:
+          arch: ${{ matrix.arch }}
+          distro: archarm_latest
+          githubToken: ${{ secrets.TOKEN }}
+          dockerRunArgs: |
+            --volume "${{ runner.temp }}:/workspace"
+          env: |
+            PKGEXT: .pkg.tar.zst
+            REPO_IDENTIFIER: ${{ steps.set-vars.outputs.repo-id }}
+          shell: /bin/sh
+          run: |
+            echo "::set-output name=arch::$(uname -m)"
+            pacman -Syyu --noconfirm
+            pacman -S --noconfirm base-devel sudo
+            echo 'auruser ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/auruser
+            useradd -m auruser
+            cd /tmp
+            curl --output aurutils.tar.gz https://aur.archlinux.org/cgit/aur.git/snapshot/aurutils.tar.gz
+            tar xf aurutils.tar.gz
+            chmod -R 777 /tmp/aurutils
+            cd aurutils
+            sudo -u auruser makepkg --syncdeps --noconfirm
+            pacman -U --noconfirm aurutils-*.pkg.*
+            cp -v /tmp/aurutils/aurutils-*.pkg.* /workspace
+            repo-add /workspace/${REPO_IDENTIFIER}.db.tar.gz /workspace/aurutils-*.pkg.*
+            chmod -R 777 /workspace
+            echo "# local repository (required by aur tools to be set up)" >> /etc/pacman.conf
+            echo "[${REPO_IDENTIFIER}]" >> /etc/pacman.conf
+            echo "SigLevel = Optional TrustAll" >> /etc/pacman.conf
+            echo "Server = https://github.com/${{ github.repository }}/releases/download/${{ steps.prepare.outputs.arch }}" >> /etc/pacman.conf
+            pacman -Sy --noconfirm
+            PACKAGES=(emacs-git)
+            for pkg in "${PACKAGES[@]}"; do
+              echo "### Processing package: $pkg"
+              echo "### Fetching package: $pkg"
+              mkdir -p /tmp/build
+              pushd /tmp/build
+              aur fetch $pkg
+              pushd /tmp/build/$pkg
+              echo "### Override architecture to aarch64"
+              if [[ "${{ matrix.arch }}" == "aarch64" ]]; then
+                sed -i "s/^arch=.*/arch=(x86_64 aarch64)/" PKGBUILD
+              elif [[ "${{ matrix.arch }}" == "armv7" ]]; then
+                sed -i "s/^arch=.*/arch=(armv7)/" PKGBUILD
+              fi
+              aur build --noconfirm --syncdeps --clean
+              popd
+              popd
+            done
+            chmod -R 777 /workspace
           
       - name: Remove symbolic links
         run: |
