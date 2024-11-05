@@ -177,7 +177,7 @@ jobs:
             
             mkdir -p /tmp/build
             chmod -R 777 /tmp/build
-            PACKAGES=(hello)
+            PACKAGES=(emacs-git)
             for pkg in "${PACKAGES[@]}"; do
               echo "### Processing package: $pkg"
               echo "### Fetching package: $pkg"
@@ -201,9 +201,12 @@ jobs:
       - name: Remove symbolic links
         run: |
           cd "${{ runner.temp }}"
+          ls -al
           rm -v ${{ steps.set-vars.outputs.repo-id }}.db ${{ steps.set-vars.outputs.repo-id }}.files
           cp -v ${{ steps.set-vars.outputs.repo-id }}.db.tar.gz ${{ steps.set-vars.outputs.repo-id }}.db
           cp -v ${{ steps.set-vars.outputs.repo-id }}.files.tar.gz ${{ steps.set-vars.outputs.repo-id }}.files
+          rm -fv build-log.txt *.sh
+          ls -al
 
       - name: Remove release
         uses: cb80/delrel@latest
@@ -220,7 +223,7 @@ jobs:
             To use this repository, please append the following to `/etc/pacman.conf`:
             ```
             [${{ steps.set-vars.outputs.repo-id }}]
-            SigLevel = Required
+            SigLevel = Optional    
             Server = https://github.com/${{ github.repository }}/releases/download/${{ steps.prepare.outputs.arch }}
             ```
           artifacts: |
