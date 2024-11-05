@@ -154,6 +154,7 @@ jobs:
           shell: /bin/sh
           run: |
             echo "::set-output name=arch::$(uname -m)"
+            sed -i "s/^PKGEXT=.*/PKGEXT='.pkg.tar.zst'/" /etc/makepkg.conf
             pacman -Syyu --noconfirm
             pacman -S --noconfirm base-devel sudo
             echo 'auruser ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/auruser
@@ -192,10 +193,7 @@ jobs:
               sudo -u auruser aur build --noconfirm --syncdeps --clean
               popd
               popd
-              ls /tmp/build/$pkg -la
-              ls -la /tmp/build
-              ls -la /workspace
-              cp -v /tmp/build/$pkg/$pkg-*.pkg.* /workspace
+              #cp -v /tmp/build/$pkg/$pkg-*.pkg.* /workspace
               repo-add /workspace/${REPO_IDENTIFIER}.db.tar.gz /workspace/$pkg-*.pkg.*
             done
             chmod -R 777 /workspace
