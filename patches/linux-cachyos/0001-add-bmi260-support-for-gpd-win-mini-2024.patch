@@ -1,0 +1,64 @@
+From 6b17476468906610 Mon Apr 07 10:00:00 2025
+From: MoozIiSP <yuaolni@gmail.com>
+Date: Mon, 08 Apr 2025 00:00:00 +0800
+Subject: [PATCH] Add BMI260 IMU support and blacklist BMI160
+
+This patch adds support for Bosch BMI260 IMU sensor and blacklists
+the unnecessary BMI160 driver. Changes include:
+
+1. Add BMI260 IMU driver patch from Manjaro
+2. Add blacklist configuration for BMI160
+3. Update b2sums for new files
+
+---
+diff --git a/linux-cachyos-deckify/PKGBUILD b/linux-cachyos-deckify/PKGBUILD
+index 6b174764..68906610 100644
+--- a/linux-cachyos-deckify/PKGBUILD
++++ b/linux-cachyos-deckify/PKGBUILD
+@@ -185,7 +185,10 @@ source=(
+     "auto-cpu-optimization.sh"
+     "${_patchsource}/all/0001-cachyos-base-all.patch"
+     "${_patchsource}/misc/0001-acpi-call.patch"
+-    "${_patchsource}/misc/0001-handheld.patch")
++    "${_patchsource}/misc/0001-handheld.patch"
++    "https://gitlab.manjaro.org/packages/core/linux${_major/./}/-/raw/master/0001-iio_imu_Add_driver_for_Bosch_BMI260_IMU.patch"
++    "blacklist-bmi160.conf"
++)
+ 
+ # LLVM makedepends
+ if _is_lto_kernel; then
+@@ -542,6 +545,9 @@ _package() {
+ 
+     # remove build links
+     rm "$modulesdir"/build
++
++    # Install blacklist configuration
++    install -Dm644 ../blacklist-bmi160.conf "$pkgdir/etc/modprobe.d/blacklist-bmi160.conf"
+ }
+ 
+ _package-headers() {
+@@ -703,9 +709,12 @@ for _p in "${pkgname[@]}"; do
+ done
+ 
+ b2sums=('11835719804b406fe281ea1c276a84dc0cbaa808552ddcca9233d3eaeb1c001d0455c7205379b02de8e8db758c1bae6fe7ceb6697e63e3cf9ae7187dc7a9715e'
+-        '612d73473e4df10829345031f6896280b38d12f1d1906fa3fe3a373d3b35046cfb3c987a8535842dc92b7912272ee1ff2f858f9e2949bfa7dd24fdeb0a666ccc'
++        'f35c2d9b4fce4bb94ac5e6dda23a1272d959a8797e07e4dafcbb2791fc4e3a419afb2b4cff491e75ed38c82275ab10c36dfc8cd99a1ae8bbccb4982b1f4838e2'
+         '390c7b80608e9017f752b18660cc18ad1ec69f0aab41a2edfcfc26621dcccf5c7051c9d233d9bdf1df63d5f1589549ee0ba3a30e43148509d27dafa9102c19ab'
+-        'ad6a1866ce73aae653c87fbb76f1b95a5dd189abb45b246b9e38ea9fa7a36d2f32a5522eb8dcb8381ae7d6920f5335c327ad4708c5bb74d528b8f11f4c7ce042'
++        '42052b073f6e5a678e97456c0ccb85b62b6aba123ecffe1c78b69162c55c677815fe490fa58aacf1f1f5ea8b610df44e36e7e0dc9eea7a2bd4602525d27e6005'
+         'be844475f453f79f5d892c2cc2a6843b32501e2a7c57dd0859ec0cba2262d9fa9a95fff77b6e3718dff449c0f3b428fce03bc35d8332081427feedd461388498'
+         '6c32d391cf62a810f9f3bc3fb6d14e4e1cc5368d97a9e2133972faf2f8425fadde6b32fadc834ae3db1ffd067ed799f8b3d23b9d731bcd126c8de63cbd2d1893'
+-        'b8b3feb90888363c4eab359db05e120572d3ac25c18eb27fef5714d609c7cb895243d45585a150438fec0a2d595931b10966322cd956818dbd3a9b3ef412d1e8')
++        'SKIP'
++        'SKIP'
++        'b8b3feb90888363c4eab359db05e120572d3ac25c18eb27fef5714d609c7cb895243d45585a150438fec0a2d595931b10966322cd956818dbd3a9b3ef412d1e8'
++        )
+diff --git a/linux-cachyos-deckify/blacklist-bmi160.conf b/linux-cachyos-deckify/blacklist-bmi160.conf
+new file mode 100644
+index 00000000..9a2d8fbd
+--- /dev/null
++++ b/linux-cachyos-deckify/blacklist-bmi160.conf
+@@ -0,0 +1,2 @@
++# Blacklist BMI160 driver to prevent conflicts with BMI260
++blacklist bmi160_core bmi160_i2c bmi160_spi
+\ No newline at end of file
