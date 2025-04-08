@@ -7,8 +7,7 @@ on:
   push:
   workflow_dispatch:
 
-permissions:
-  contents: write
+permissions: write-all
 
 jobs:
   build-and-release:
@@ -31,14 +30,11 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           allowUpdates: true
-          artifacts: artifacts/action1/*
-          artifactContentType: "raw"
-          owner: ${{ github.repository_owner }}	  
-          prerelease: true
-          replacesArtifacts: true
+          artifacts: artifacts/action1/artifact1.txt
+          owner: ${{ github.repository_owner }}
           repo: action1
           tag: nightly-${{ github.sha }}
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.TOKEN }}
 
       - name: Release to action2 repository
         uses: ncipollo/release-action@v1
@@ -51,4 +47,4 @@ jobs:
           replacesArtifacts: true
           repo: action2
           tag: nightly-${{ github.sha }}
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.TOKEN }}
