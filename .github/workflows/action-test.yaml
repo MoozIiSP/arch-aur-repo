@@ -9,6 +9,9 @@ on:
 jobs:
   build-and-release:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -27,7 +30,8 @@ jobs:
         uses: ncipollo/release-action@v1
         if: github.event_name == 'workflow_dispatch'
         with:
-          repository: ${{ github.repository_owner }}/action1
+          owner: ${{ github.repository_owner }}
+          repo: action1
           token: ${{ secrets.GITHUB_TOKEN }}
           artifacts: artifacts/action1/*
           tag: v${{ github.run_number }}
@@ -45,7 +49,8 @@ jobs:
         uses: ncipollo/release-action@v1
         if: github.event_name == 'workflow_dispatch'
         with:
-          repository: ${{ github.repository_owner }}/action2
+          owner: ${{ github.repository_owner }}
+          repo: action2
           token: ${{ secrets.GITHUB_TOKEN }}
           artifacts: artifacts/action2/*
           tag: v${{ github.run_number }}
