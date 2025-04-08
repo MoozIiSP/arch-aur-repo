@@ -40,7 +40,7 @@ jobs:
           replacesArtifacts: true
           repo: action1
           tag: nightly-${{ github.sha }}
-          token: ${{ secrets.TAHOMA2D_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Release to action2 repository
         uses: ncipollo/release-action@v1
@@ -57,4 +57,4 @@ jobs:
           replacesArtifacts: true
           repo: action2
           tag: nightly-${{ github.sha }}
-          token: ${{ secrets.TAHOMA2D_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
