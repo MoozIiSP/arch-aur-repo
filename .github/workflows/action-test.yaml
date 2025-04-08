@@ -31,12 +31,8 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           allowUpdates: true
-          artifactErrorsFailBuild: false
           artifacts: artifacts/action1/*
           artifactContentType: "raw"
-          name: ${{ env.NIGHTLYDATETIME }}
-          omitBodyDuringUpdate: true
-          omitNameDuringUpdate: true
           owner: ${{ github.repository_owner }}	  
           prerelease: true
           replacesArtifacts: true
@@ -48,12 +44,8 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           allowUpdates: true
-          artifactErrorsFailBuild: false
           artifacts: artifacts/action2/*
           artifactContentType: "raw"
-          name: ${{ env.NIGHTLYDATETIME }}
-          omitBodyDuringUpdate: true
-          omitNameDuringUpdate: true
           owner: ${{ github.repository_owner }}	  
           prerelease: true
           replacesArtifacts: true
