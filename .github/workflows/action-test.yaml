@@ -27,7 +27,6 @@ jobs:
 
       - name: Release to action1 repository
         uses: ncipollo/release-action@v1
-        if: github.event_name == 'workflow_dispatch'
         with:
           owner: ${{ github.repository_owner }}
           repo: action1
@@ -46,7 +45,6 @@ jobs:
 
       - name: Release to action2 repository
         uses: ncipollo/release-action@v1
-        if: github.event_name == 'workflow_dispatch'
         with:
           owner: ${{ github.repository_owner }}
           repo: action2
