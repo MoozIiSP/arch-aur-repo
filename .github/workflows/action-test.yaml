@@ -28,35 +28,33 @@ jobs:
       - name: Release to action1 repository
         uses: ncipollo/release-action@v1
         with:
-          owner: ${{ github.repository_owner }}
-          repo: action1
-          token: ${{ secrets.GITHUB_TOKEN }}
+          allowUpdates: true
+          artifactErrorsFailBuild: false
           artifacts: artifacts/action1/*
-          tag: v${{ github.run_number }}
-          name: Release v${{ github.run_number }}
-          body: |
-            Release for action1
-            Commit: ${{ github.sha }}
-          generateReleaseNotes: true
-          draft: false
-          prerelease: false
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          artifactContentType: "raw"
+          name: ${{ env.NIGHTLYDATETIME }}
+          omitBodyDuringUpdate: true
+          omitNameDuringUpdate: true
+          owner: ${{ github.repository_owner }}	  
+          prerelease: true
+          replacesArtifacts: true
+          repo: action1
+          tag: nightly-${{ github.sha }}
+          token: ${{ secrets.TAHOMA2D_TOKEN }}
 
       - name: Release to action2 repository
         uses: ncipollo/release-action@v1
         with:
-          owner: ${{ github.repository_owner }}
-          repo: action2
-          token: ${{ secrets.GITHUB_TOKEN }}
+          allowUpdates: true
+          artifactErrorsFailBuild: false
           artifacts: artifacts/action2/*
-          tag: v${{ github.run_number }}
-          name: Release v${{ github.run_number }}
-          body: |
-            Release for action2
-            Commit: ${{ github.sha }}
-          generateReleaseNotes: true
-          draft: false
-          prerelease: false
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          artifactContentType: "raw"
+          name: ${{ env.NIGHTLYDATETIME }}
+          omitBodyDuringUpdate: true
+          omitNameDuringUpdate: true
+          owner: ${{ github.repository_owner }}	  
+          prerelease: true
+          replacesArtifacts: true
+          repo: action2
+          tag: nightly-${{ github.sha }}
+          token: ${{ secrets.TAHOMA2D_TOKEN }}
