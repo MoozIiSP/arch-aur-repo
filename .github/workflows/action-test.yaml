@@ -1,0 +1,60 @@
+# write a workflow of github action
+#  to release two artifacts to action1 and action2 repos
+
+name: Build and Release Artifacts
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Build artifacts
+        run: |
+          mkdir -p artifacts/action1 artifacts/action2
+          # 构建 action1 的制品
+          echo "This is action1 artifact" > artifacts/action1/artifact1.txt
+          # 构建 action2 的制品
+          echo "This is action2 artifact" > artifacts/action2/artifact2.txt
+
+      - name: Release to action1 repository
+        uses: ncipollo/release-action@v1
+        if: github.event_name == 'workflow_dispatch'
+        with:
+          repository: ${{ github.repository_owner }}/action1
+          token: ${{ secrets.GITHUB_TOKEN }}
+          artifacts: artifacts/action1/*
+          tag: v${{ github.run_number }}
+          name: Release v${{ github.run_number }}
+          body: |
+            Release for action1
+            Commit: ${{ github.sha }}
+          generateReleaseNotes: true
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Release to action2 repository
+        uses: ncipollo/release-action@v1
+        if: github.event_name == 'workflow_dispatch'
+        with:
+          repository: ${{ github.repository_owner }}/action2
+          token: ${{ secrets.GITHUB_TOKEN }}
+          artifacts: artifacts/action2/*
+          tag: v${{ github.run_number }}
+          name: Release v${{ github.run_number }}
+          body: |
+            Release for action2
+            Commit: ${{ github.sha }}
+          generateReleaseNotes: true
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
