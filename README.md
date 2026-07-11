@@ -8,6 +8,7 @@ Arch Linux PKGBUILD collection and binary repository automation.
 |---|---|---|
 | `hermes-webui` | `any` | [`packages/hermes-webui`](packages/hermes-webui) |
 | `lzc-ai-browser` | `x86_64` | [`packages/lzc-ai-browser`](packages/lzc-ai-browser) |
+| `selkies` | `x86_64` | [`packages/selkies`](packages/selkies) |
 
 Each package directory contains its `PKGBUILD`, generated `.SRCINFO`, and any
 small local source/service/install files required by the build. Binary packages

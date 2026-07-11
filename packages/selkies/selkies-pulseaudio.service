@@ -1,0 +1,10 @@
+[Unit]
+Description=PulseAudio for Selkies
+After=selkies-xvfb.service
+[Service]
+Type=simple
+ExecStart=/usr/bin/pulseaudio --disallow-exit --daemonize=no --exit-idle-time=-1 --realtime=false
+Restart=always
+RestartSec=3
+[Install]
+WantedBy=graphical.target

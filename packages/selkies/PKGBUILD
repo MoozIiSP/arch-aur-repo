@@ -1,0 +1,85 @@
+# Maintainer: mooziisp
+# Contributor: Yukina
+
+pkgname=selkies
+pkgver=0.0.0
+pkgrel=4
+pkgdesc="Open-Source Low-Latency Linux WebRTC HTML5 Remote Desktop Streaming Platform"
+arch=("x86_64")
+url="https://github.com/selkies-project/selkies"
+license=("MPL-2.0")
+
+_commit=5686f6c4d20ed63a27e253bac00fb89ef99828c8
+_srcname="${pkgname}-${_commit}"
+
+depends=(
+  "python" "python-aiofiles" "python-aiohttp"
+  "python-aioice" "python-gputil" "python-pasimple" "python-pcmflux"
+  "python-pixelflux" "python-pulsectl" "python-pulsectl-asyncio" "python-pynput"
+  "python-cffi" "python-cryptography" "python-distro"
+  "python-google-crc32c" "python-msgpack"
+  "python-prometheus_client" "python-psutil"
+  "python-pyee" "python-pylibsrtp" "python-pyopenssl"
+  "python-watchdog" "python-websockets" "python-xkbcommon"
+  "python-av" "python-xlib" "python-pillow"
+  "gstreamer" "gst-plugins-base" "gst-plugins-good"
+  "gst-plugins-bad" "gst-plugins-ugly" "gst-libav"
+  "xorg-server-xvfb" "nginx" "lzc-ai-browser"
+)
+optdepends=("pulseaudio: PulseAudio audio backend (or pipewire-pulse)")
+makedepends=("python-installer" "python-build" "python-wheel" "python-setuptools" "nodejs" "npm")
+source=(
+  "${url}/archive/${_commit}/${pkgname}-${_commit::7}.tar.gz"
+  "selkies-xvfb.service"
+  "selkies-pulseaudio.service"
+  "selkies.service"
+  "selkies.nginx.conf"
+)
+sha256sums=(
+  "1c080d832d3862df7d48db8c5c003fe542e670bf806cd363b3ba263c8fda3373"
+  "a9e8c9b9ac43599dfbf70229ac772e77fadff382c8871eb75571384c74210304"
+  "93ff372500022bec87b428b9f75e56e6cd32b8fd803a1f0889b999ec6ba33f40"
+  "87160ff88abbc5ede469a4d6a58cb16648008c51821433c4c9f40ac1cd61e49e"
+  "f3e680ac57f699d040fdd6e5ed9364b91b16a6bb5242050e4c3783a081546810"
+)
+
+_install_wheel() {
+  python -m installer --destdir="${pkgdir}" "$1"
+}
+
+_build_python_wheel() {
+  cd "$1"
+  python -m build --wheel --no-isolation
+  _install_wheel dist/*.whl
+}
+
+_npm_build() {
+  cd "${srcdir}/${_srcname}/addons/$1"
+  npm install --no-audit --no-fund
+  npm run build
+}
+
+package() {
+  local name out service variant
+
+  _build_python_wheel "${srcdir}/${_srcname}"
+
+  _npm_build "selkies-web-core"
+
+  for variant in "selkies-dashboard:web" "selkies-dashboard-wish:selkies-dashboard-wish"; do
+    name=${variant%%:*}
+    out=${variant##*:}
+    cp "${srcdir}/${_srcname}/addons/selkies-web-core/dist/selkies-core.js" \
+      "${srcdir}/${_srcname}/addons/${name}/src/selkies-core.js"
+    _npm_build "${name}"
+    install -d "${pkgdir}/usr/share/selkies/${out}"
+    cp -r "${srcdir}/${_srcname}/addons/${name}/dist/." "${pkgdir}/usr/share/selkies/${out}/"
+  done
+
+  for service in selkies-xvfb selkies-pulseaudio selkies; do
+    install -Dm644 "${srcdir}/${service}.service" "${pkgdir}/usr/lib/systemd/system/${service}.service"
+  done
+
+  install -Dm644 "${srcdir}/selkies.nginx.conf" "${pkgdir}/etc/nginx/conf.d/selkies.conf"
+  install -Dm644 "${srcdir}/${_srcname}/LICENSE" "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+}

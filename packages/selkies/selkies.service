@@ -1,0 +1,22 @@
+[Unit]
+Description=Selkies WebRTC Server
+Requires=selkies-xvfb.service
+After=selkies-pulseaudio.service selkies-xvfb.service
+[Service]
+Type=simple
+Environment=DISPLAY=:1
+Environment=SELKIES_USE_CSS_SCALING=true
+Environment=SELKIES_IS_MANUAL_RESOLUTION_MODE=true
+Environment=SELKIES_MANUAL_WIDTH=1920
+Environment=SELKIES_PORT=9091
+Environment=SELKIES_ENABLE_BASIC_AUTH=disabled
+Environment=SELKIES_UI_TITLE=Agent
+Environment=SELKIES_UI_SHOW_LOGO=false
+Environment=SELKIES_UI_SIDEBAR_SHOW_APPS=false
+Environment=SELKIES_WEB_ROOT=/usr/share/selkies/web
+ExecStartPre=/usr/bin/timeout 30 sh -c "while ! [ -S /tmp/.X11-unix/X1 ]; do sleep 1; done"
+ExecStart=/usr/bin/selkies
+Restart=always
+RestartSec=5
+[Install]
+WantedBy=graphical.target
