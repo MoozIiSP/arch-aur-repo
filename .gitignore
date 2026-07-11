@@ -1,0 +1,11 @@
+# makepkg outputs and working directories
+**/src/
+**/pkg/
+**/*.pkg.tar.*
+**/*.tar.zst
+**/*.tar.gz
+**/*.zip
+
+# signatures and logs
+**/*.sig
+**/*.log

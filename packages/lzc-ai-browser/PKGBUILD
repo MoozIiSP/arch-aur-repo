@@ -1,0 +1,66 @@
+# Maintainer: Mooziisp <mooziisp@example.com>
+# PKGBUILD for LCMD AI Browser (懒猫智能体浏览器 / cloakbrowser)
+# Derived from: https://dl.lazycatmicroserver.com/aibrowser/install.sh
+
+pkgname=lzc-ai-browser
+pkgver=0.9.77
+pkgrel=1
+pkgdesc='LCMD AI Browser - Chromium-based browser with AI extension and auto-login'
+arch=('x86_64')
+url='https://lazycatmicroserver.com/aibrowser'
+license=('custom')
+depends=(
+  'alsa-lib' 'cairo' 'curl' 'dbus'
+  'gdk-pixbuf2' 'glib2' 'gtk3'
+  'libarchive' 'libcups' 'libdrm'
+  'libx11' 'libxcb' 'libxcomposite'
+  'libxdamage' 'libxext' 'libxfixes'
+  'libxrandr' 'libxkbcommon' 'libxtst'
+  'libpulse' 'nss' 'nspr' 'pango' 'zstd'
+)
+
+_src_url='https://dl.lazycat.cloud/aibrowser/lzc-ai-browser-linux-x86_64.tar.zst'
+_ai_url='https://dl.lazycat.cloud/aibrowser/extension/lzc-ai-extension-0.9.77-chrome.zip'
+
+install=lzc-ai-browser.install
+source=("${_src_url}" "${_ai_url}")
+sha256sums=('9b4d27138a1ee5f49b746eb70771d1aed292c4f10db17ecc5a1bd3de1d880882' '5acb7d8f754a8b81eebaea630bd3216405c3e6957f3706af78f53bfb4e072d51')
+package() {
+  cd "${srcdir}"
+  install -d "${pkgdir}/opt/lzc-ai-browser"
+  cp -ar chrome-linux "${pkgdir}/opt/lzc-ai-browser/"
+  cp -a lzc-ai-browser-busybox "${pkgdir}/opt/lzc-ai-browser/"
+
+  install -d "${pkgdir}/usr/bin"
+  ln -sf /opt/lzc-ai-browser/lzc-ai-browser-busybox "${pkgdir}/usr/bin/lzc-ai-browser"
+  ln -sf /opt/lzc-ai-browser/lzc-ai-browser-busybox "${pkgdir}/usr/bin/lzc-ai-browser-extension"
+
+  install -d "${pkgdir}/usr/share/applications"
+  sed 's|HOMEDIR/.local/bin|/usr/bin|g' lzc-ai-browser.desktop \
+    > "${pkgdir}/usr/share/applications/lzc-ai-browser.desktop"
+
+  for res in 16 24 32 48 64 128 256; do
+    [ -f "product_logo_${res}.png" ] || continue
+    install -d "${pkgdir}/usr/share/icons/hicolor/${res}x${res}/apps"
+    install -m644 "product_logo_${res}.png" \
+      "${pkgdir}/usr/share/icons/hicolor/${res}x${res}/apps/lzc-ai-browser.png"
+  done
+
+  install -d "${pkgdir}/opt/lzc-ai-browser/extensions"
+  cp -ar extensions/* "${pkgdir}/opt/lzc-ai-browser/extensions/"
+
+  install -d "${pkgdir}/opt/lzc-ai-browser/extensions/cloud.lazycat.app.ai"
+  bsdtar xf "${srcdir}/lzc-ai-extension-${pkgver}-chrome.zip" \
+    -C "${pkgdir}/opt/lzc-ai-browser/extensions/cloud.lazycat.app.ai"
+
+  install -d "${pkgdir}/etc/chromium/native-messaging-hosts"
+  sed 's|EXECUTABLE_PATH|/usr/bin/lzc-ai-browser-extension|g' \
+    extensions/cloud.lazycat.aibrowser.extension.json \
+    > "${pkgdir}/etc/chromium/native-messaging-hosts/cloud.lazycat.aibrowser.extension.json"
+
+  install -d "${pkgdir}/etc/opt/chromium/native-messaging-hosts"
+  ln -sf /etc/chromium/native-messaging-hosts/cloud.lazycat.aibrowser.extension.json \
+    "${pkgdir}/etc/opt/chromium/native-messaging-hosts/cloud.lazycat.aibrowser.extension.json"
+
+  chmod 4711 "${pkgdir}/opt/lzc-ai-browser/chrome-linux/chrome_sandbox"
+}

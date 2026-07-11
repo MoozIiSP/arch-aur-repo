@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+app_dir=/usr/lib/hermes-webui
+config_dir="${XDG_CONFIG_HOME:-${HOME}/.config}/hermes-webui"
+env_file="${HERMES_WEBUI_ENV_FILE:-${config_dir}/env}"
+
+if [[ -r "${env_file}" ]]; then
+  set -a
+  # shellcheck source=/dev/null
+  source "${env_file}"
+  set +a
+fi
+
+: "${HERMES_WEBUI_HOST:=127.0.0.1}"
+: "${HERMES_WEBUI_PORT:=8787}"
+export HERMES_WEBUI_HOST HERMES_WEBUI_PORT
+
+if [[ "${HERMES_WEBUI_HOST}" != "127.0.0.1"    && "${HERMES_WEBUI_HOST}" != "localhost"    && "${HERMES_WEBUI_HOST}" != "::1"    && -z "${HERMES_WEBUI_PASSWORD:-}" ]]; then
+  printf 'hermes-webui: refusing non-loopback bind without HERMES_WEBUI_PASSWORD\n' >&2
+  exit 78
+fi
+
+if [[ -z "${HERMES_WEBUI_PYTHON:-}" ]]; then
+  if [[ -x "${HERMES_HOME:-${HOME}/.hermes}/hermes-agent/.venv/bin/python" ]]; then
+    HERMES_WEBUI_PYTHON="${HERMES_HOME:-${HOME}/.hermes}/hermes-agent/.venv/bin/python"
+  elif command -v python3 >/dev/null 2>&1; then
+    HERMES_WEBUI_PYTHON="$(command -v python3)"
+  else
+    printf 'hermes-webui: Python 3 is required\n' >&2
+    exit 69
+  fi
+fi
+export HERMES_WEBUI_PYTHON
+
+cd "${app_dir}"
+exec "${HERMES_WEBUI_PYTHON}" server.py "$@"

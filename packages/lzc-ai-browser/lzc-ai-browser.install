@@ -1,0 +1,87 @@
+# post_install / post_upgrade: set up per-user config for lzc-ai-browser
+# Symlinks extensions + NativeMessagingHosts from /opt/lzc-ai-browser/ to each user's ~/.config/
+
+_setup_user_config() {
+  local home="$1"
+  local cfg="${home}/.config/lzc-ai-browser"
+
+  # Skip if user has no home or it doesn't exist
+  [ -d "${home}" ] || return 0
+
+  mkdir -p "${cfg}/extensions"
+  mkdir -p "${cfg}/NativeMessagingHosts"
+
+  # autologin extension
+  if [ -d "/opt/lzc-ai-browser/extensions/lazycat-autologin" ]; then
+    ln -snf "/opt/lzc-ai-browser/extensions/lazycat-autologin" \
+      "${cfg}/extensions/lazycat-autologin"
+  fi
+
+  # AI extension
+  if [ -d "/opt/lzc-ai-browser/extensions/cloud.lazycat.app.ai" ]; then
+    ln -snf "/opt/lzc-ai-browser/extensions/cloud.lazycat.app.ai" \
+      "${cfg}/extensions/cloud.lazycat.app.ai"
+  fi
+
+  # NativeMessagingHosts JSON
+  if [ -f "/etc/chromium/native-messaging-hosts/cloud.lazycat.aibrowser.extension.json" ]; then
+    ln -snf "/etc/chromium/native-messaging-hosts/cloud.lazycat.aibrowser.extension.json" \
+      "${cfg}/NativeMessagingHosts/cloud.lazycat.aibrowser.extension.json"
+  fi
+
+  # Fix ownership
+  local uid gid
+  uid=$(stat -c '%u' "${home}" 2>/dev/null || echo 0)
+  gid=$(stat -c '%g' "${home}" 2>/dev/null || echo 0)
+  chown -R "${uid}:${gid}" "${cfg}" 2>/dev/null || true
+}
+
+_cleanup_user_config() {
+  local home="$1"
+  local cfg="${home}/.config/lzc-ai-browser"
+
+  [ -d "${home}" ] || return 0
+
+  # Remove only symlinks we created — leave user's own files alone
+  for link in \
+    "${cfg}/extensions/lazycat-autologin" \
+    "${cfg}/extensions/cloud.lazycat.app.ai" \
+    "${cfg}/NativeMessagingHosts/cloud.lazycat.aibrowser.extension.json"; do
+    [ -L "${link}" ] && rm -f "${link}"
+  done
+
+  # Remove empty dirs we created
+  rmdir "${cfg}/extensions" 2>/dev/null || true
+  rmdir "${cfg}/NativeMessagingHosts" 2>/dev/null || true
+  rmdir "${cfg}" 2>/dev/null || true
+}
+
+_apply_all_users() {
+  local func="$1"
+  # /etc/skel for new users
+  "${func}" "/etc/skel"
+  # Existing users
+  while IFS=: read -r _ _ _ _ _ home _; do
+    [ -d "${home}" ] || continue
+    "${func}" "${home}"
+  done < /etc/passwd
+}
+
+post_install() {
+  _apply_all_users _setup_user_config
+  echo ":: lzc-ai-browser: per-user config initialized for all existing users"
+}
+
+post_upgrade() {
+  _apply_all_users _setup_user_config
+  echo ":: lzc-ai-browser: per-user config refreshed"
+}
+
+pre_remove() {
+  :
+}
+
+post_remove() {
+  echo ":: lzc-ai-browser: per-user config in ~/.config/lzc-ai-browser/ NOT removed"
+  echo "   Remove manually: rm -rf ~/.config/lzc-ai-browser"
+}

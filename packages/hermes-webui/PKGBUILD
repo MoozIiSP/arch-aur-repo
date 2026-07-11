@@ -1,0 +1,28 @@
+pkgname=hermes-webui
+pkgver=0.52.0
+pkgrel=1
+pkgdesc="Community web interface for Hermes Agent"
+arch=('any')
+url="https://github.com/nesquena/hermes-webui"
+license=('MIT')
+depends=('bash' 'curl' 'python')
+optdepends=('hermes-agent: Hermes Agent runtime (normally installed in ~/.hermes/hermes-agent)')
+source=("${pkgname}-${pkgver}.tar.gz::${url}/archive/refs/tags/v${pkgver}.tar.gz"
+        'hermes-webui'
+        'hermes-webui.service')
+sha256sums=('8813324139bfc1f4f9ff227cab546d4a2e3e25744d77aa3001f4c06cbec527a3'
+            'ca3a35f8f4c89678ccc6b0d4b31e2d784cd7374198e68adbf0e2bc04d37605b9'
+            '8e3095f1fc1cd19c50f95f8fe4548c89b98f83fa6b23d034d112e483baeee6a1')
+
+package() {
+  cd "${srcdir}/${pkgname}-${pkgver}"
+
+  install -d "${pkgdir}/usr/lib/${pkgname}"
+  cp -a --no-preserve=ownership . "${pkgdir}/usr/lib/${pkgname}/"
+  rm -rf "${pkgdir}/usr/lib/${pkgname}/.github"
+
+  install -Dm755 "${srcdir}/hermes-webui"     "${pkgdir}/usr/bin/hermes-webui"
+  install -Dm644 "${srcdir}/hermes-webui.service"     "${pkgdir}/usr/lib/systemd/user/hermes-webui.service"
+  install -Dm644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+  install -Dm644 README.md "${pkgdir}/usr/share/doc/${pkgname}/README.md"
+}

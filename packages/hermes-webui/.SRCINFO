@@ -1,0 +1,19 @@
+pkgbase = hermes-webui
+	pkgdesc = Community web interface for Hermes Agent
+	pkgver = 0.52.0
+	pkgrel = 1
+	url = https://github.com/nesquena/hermes-webui
+	arch = any
+	license = MIT
+	depends = bash
+	depends = curl
+	depends = python
+	optdepends = hermes-agent: Hermes Agent runtime (normally installed in ~/.hermes/hermes-agent)
+	source = hermes-webui-0.52.0.tar.gz::https://github.com/nesquena/hermes-webui/archive/refs/tags/v0.52.0.tar.gz
+	source = hermes-webui
+	source = hermes-webui.service
+	sha256sums = 8813324139bfc1f4f9ff227cab546d4a2e3e25744d77aa3001f4c06cbec527a3
+	sha256sums = ca3a35f8f4c89678ccc6b0d4b31e2d784cd7374198e68adbf0e2bc04d37605b9
+	sha256sums = 8e3095f1fc1cd19c50f95f8fe4548c89b98f83fa6b23d034d112e483baeee6a1
+
+pkgname = hermes-webui

@@ -1,0 +1,21 @@
+[Unit]
+Description=Hermes WebUI
+Documentation=https://github.com/nesquena/hermes-webui
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/hermes-webui
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=30
+
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=%h/.hermes %h/.config/hermes-webui %h/workspace
+
+[Install]
+WantedBy=default.target
