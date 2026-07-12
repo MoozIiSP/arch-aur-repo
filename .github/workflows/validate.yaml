@@ -1,0 +1,64 @@
+name: Validate packages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "packages/**"
+      - ".github/workflows/validate.yaml"
+  pull_request:
+    paths:
+      - "packages/**"
+      - ".github/workflows/validate.yaml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: validate-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  pkgbuild:
+    name: Validate PKGBUILDs
+    runs-on: ubuntu-latest
+    container: archlinux:latest
+
+    steps:
+      - name: Install validation tools
+        run: pacman -Syu --noconfirm --needed base-devel git namcap
+
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Create unprivileged build user
+        run: |
+          useradd --create-home builder
+          chown -R builder:builder "$GITHUB_WORKSPACE"
+
+      - name: Check syntax, metadata, and sources
+        run: |
+          set -euo pipefail
+          status=0
+
+          for dir in packages/*; do
+            [ -d "$dir" ] || continue
+            echo "::group::$dir"
+
+            bash -n "$dir/PKGBUILD"
+
+            runuser -u builder -- bash -lc "cd '$GITHUB_WORKSPACE/$dir' && makepkg --printsrcinfo > .SRCINFO.generated"
+            if ! cmp -s "$dir/.SRCINFO" "$dir/.SRCINFO.generated"; then
+              echo "::error file=$dir/.SRCINFO::.SRCINFO is out of date; regenerate it with makepkg --printsrcinfo"
+              diff -u "$dir/.SRCINFO" "$dir/.SRCINFO.generated" || true
+              status=1
+            fi
+            rm -f "$dir/.SRCINFO.generated"
+
+            runuser -u builder -- bash -lc "cd '$GITHUB_WORKSPACE/$dir' && makepkg --verifysource --noconfirm"
+            namcap "$dir/PKGBUILD" || true
+            echo "::endgroup::"
+          done
+
+          exit "$status"
