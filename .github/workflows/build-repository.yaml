@@ -31,6 +31,10 @@ jobs:
       - name: Install build tools
         run: pacman -Syu --noconfirm --needed base-devel git sudo pacman-contrib
 
+      - name: Configure resilient downloads
+        run: |
+          sed -i 's|^DLAGENTS=(.*|DLAGENTS=("https::/usr/bin/curl -qgC - --retry 12 --retry-delay 5 --retry-all-errors -fL -o %o %u" "http::/usr/bin/curl -qgC - --retry 12 --retry-delay 5 --retry-all-errors -fL -o %o %u")|' /etc/makepkg.conf
+
       - name: Check out repository
         uses: actions/checkout@v4
 
