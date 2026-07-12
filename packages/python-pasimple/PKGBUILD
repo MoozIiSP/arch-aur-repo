@@ -1,0 +1,15 @@
+pkgname=python-pasimple
+pkgver=0.0.3
+pkgrel=1
+pkgdesc="PulseAudio simple API bindings for Python"
+arch=('any')
+url="https://pypi.org/project/pasimple/"
+license=('custom')
+depends=('python')
+makedepends=('python-installer')
+source=("pasimple-0.0.3-py3-none-any.whl::https://files.pythonhosted.org/packages/95/99/5ffadeb3545d3f6f17853368070a13c88b17a62fe883674a0428ea82b3b5/pasimple-0.0.3-py3-none-any.whl")
+sha256sums=('95dcc50a691212755067bd1f82b04b9b0f0ae8738f84f8cbe5639d9f39f4ec7d')
+
+package() {
+  python -m installer --destdir="$pkgdir" "$srcdir/pasimple-0.0.3-py3-none-any.whl"
+}

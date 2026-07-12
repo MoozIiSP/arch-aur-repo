@@ -18,6 +18,9 @@ packages-aarch64.txt      Legacy AUR build list for aarch64
 | `hermes-webui` | `any` | [`packages/hermes-webui`](packages/hermes-webui) |
 | `lzc-ai-browser` | `x86_64` | [`packages/lzc-ai-browser`](packages/lzc-ai-browser) |
 | `selkies` | `x86_64` | [`packages/selkies`](packages/selkies) |
+| `python-pasimple` | `any` | [`packages/python-pasimple`](packages/python-pasimple) |
+| `python-pcmflux` | `x86_64` | [`packages/python-pcmflux`](packages/python-pcmflux) |
+| `python-pixelflux` | `x86_64` | [`packages/python-pixelflux`](packages/python-pixelflux) |
 
 Each directory contains:
 
@@ -57,8 +60,22 @@ package on pushes and pull requests that touch `packages/`:
 3. downloads and validates all declared sources;
 4. reports `namcap` findings.
 
-The workflow validates packaging sources but does not publish packages or
-modify GitHub Releases.
+The validation workflow does not publish packages. The separate
+[`build-repository.yaml`](.github/workflows/build-repository.yaml) workflow:
+
+1. builds required AUR dependencies;
+2. builds locally maintained packages in dependency order;
+3. creates a pacman repository with `repo-add`;
+4. uploads an Actions artifact;
+5. updates the rolling `repository-x86_64` GitHub Release.
+
+Use the released repository with:
+
+```ini
+[moozliisp-arch]
+SigLevel = Optional TrustAll
+Server = https://github.com/MoozIiSP/arch-aur-repo/releases/download/repository-x86_64
+```
 
 ## Legacy AUR build lists
 

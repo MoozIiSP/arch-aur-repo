@@ -1,0 +1,15 @@
+pkgname=python-pixelflux
+pkgver=1.6.4
+pkgrel=1
+pkgdesc="Screen capture module used by Selkies"
+arch=('x86_64')
+url="https://pypi.org/project/pixelflux/"
+license=('custom')
+depends=('python')
+makedepends=('python-installer')
+source=("pixelflux-1.6.4-cp314-cp314-manylinux_2_34_x86_64.whl::https://files.pythonhosted.org/packages/cb/bc/3084b5e1b4c39506f12a7b717a7e85c1d4818db9897fc15f0914075e4e84/pixelflux-1.6.4-cp314-cp314-manylinux_2_34_x86_64.whl")
+sha256sums=('394181cc61c7a637753221ccb5a6fa25baff2d9ac7f5cec9828413f8a8f41a15')
+
+package() {
+  python -m installer --destdir="$pkgdir" "$srcdir/pixelflux-1.6.4-cp314-cp314-manylinux_2_34_x86_64.whl"
+}

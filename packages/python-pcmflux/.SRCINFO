@@ -1,0 +1,13 @@
+pkgbase = python-pcmflux
+	pkgdesc = Audio capture module used by Selkies
+	pkgver = 1.0.8
+	pkgrel = 1
+	url = https://pypi.org/project/pcmflux/
+	arch = x86_64
+	license = custom
+	makedepends = python-installer
+	depends = python
+	source = pcmflux-1.0.8-cp314-cp314-manylinux_2_28_x86_64.whl::https://files.pythonhosted.org/packages/6e/5b/5b8c9867ba2b557458b051c7226ed8ab649726281ab3e5eebfb8bc65e3d5/pcmflux-1.0.8-cp314-cp314-manylinux_2_28_x86_64.whl
+	sha256sums = 0dc6d5f5a10c1cf558a097f10e642bb725699bdcf7816da511f3b7259c22819c
+
+pkgname = python-pcmflux

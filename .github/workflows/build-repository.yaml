@@ -1,0 +1,118 @@
+name: Build package repository
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "packages/**"
+      - "aur-dependencies-x86_64.txt"
+      - ".github/workflows/build-repository.yaml"
+  schedule:
+    - cron: "17 3 * * 0"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: package-repository-x86_64
+  cancel-in-progress: false
+
+env:
+  REPO_NAME: moozliisp-arch
+  RELEASE_TAG: repository-x86_64
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container: archlinux:latest
+
+    steps:
+      - name: Install build tools
+        run: pacman -Syu --noconfirm --needed base-devel git sudo pacman-contrib
+
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Create build user
+        run: |
+          useradd --create-home builder
+          printf 'builder ALL=(ALL) NOPASSWD: ALL\n' >/etc/sudoers.d/builder
+          chmod 0440 /etc/sudoers.d/builder
+          chown -R builder:builder "$GITHUB_WORKSPACE"
+
+      - name: Build AUR dependencies
+        run: |
+          set -euo pipefail
+          install -d -o builder -g builder "$GITHUB_WORKSPACE/out" "$GITHUB_WORKSPACE/aur-build"
+
+          while IFS= read -r pkg; do
+            [[ -n "$pkg" && "$pkg" != \#* ]] || continue
+            echo "::group::AUR dependency: $pkg"
+            runuser -u builder -- git clone --depth 1 "https://aur.archlinux.org/${pkg}.git" "aur-build/${pkg}"
+            runuser -u builder -- bash -lc "cd '$GITHUB_WORKSPACE/aur-build/$pkg' && makepkg --syncdeps --noconfirm --cleanbuild --clean"
+            mapfile -t built < <(find "aur-build/$pkg" -maxdepth 1 -name '*.pkg.tar.zst' ! -name '*-debug-*' -print)
+            cp "${built[@]}" out/
+            pacman -U --noconfirm "${built[@]}"
+            echo "::endgroup::"
+          done < aur-dependencies-x86_64.txt
+
+      - name: Build local packages in dependency order
+        run: |
+          set -euo pipefail
+          packages=(
+            python-pasimple
+            python-pcmflux
+            python-pixelflux
+            hermes-webui
+            lzc-ai-browser
+            selkies
+          )
+
+          for pkg in "${packages[@]}"; do
+            echo "::group::Local package: $pkg"
+            runuser -u builder -- bash -lc "cd '$GITHUB_WORKSPACE/packages/$pkg' && makepkg --syncdeps --noconfirm --cleanbuild --clean"
+            mapfile -t built < <(find "packages/$pkg" -maxdepth 1 -name '*.pkg.tar.zst' ! -name '*-debug-*' -print)
+            cp "${built[@]}" out/
+            pacman -U --noconfirm "${built[@]}"
+            echo "::endgroup::"
+          done
+
+      - name: Create pacman repository database
+        run: |
+          set -euo pipefail
+          cd out
+          rm -f ./*-debug-*.pkg.tar.zst
+          repo-add "${REPO_NAME}.db.tar.gz" ./*.pkg.tar.zst
+          ln -s "${REPO_NAME}.db.tar.gz" "${REPO_NAME}.db"
+          ln -s "${REPO_NAME}.files.tar.gz" "${REPO_NAME}.files"
+          sha256sum ./*.pkg.tar.zst ./*.db.tar.gz ./*.files.tar.gz > SHA256SUMS
+
+      - name: Upload Actions artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.REPO_NAME }}-x86_64
+          path: out/
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Publish rolling GitHub Release
+        if: github.event_name != 'pull_request'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ env.RELEASE_TAG }}
+          name: Arch package repository (x86_64)
+          prerelease: false
+          make_latest: false
+          fail_on_unmatched_files: true
+          files: out/*
+          body: |
+            Rolling x86_64 Arch Linux package repository.
+
+            Add this to `/etc/pacman.conf`:
+
+            ```ini
+            [${{ env.REPO_NAME }}]
+            SigLevel = Optional TrustAll
+            Server = https://github.com/${{ github.repository }}/releases/download/${{ env.RELEASE_TAG }}
+            ```

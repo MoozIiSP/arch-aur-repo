@@ -1,0 +1,6 @@
+# Selkies runtime dependencies not available in Arch official repositories.
+python-aioice
+python-gputil
+python-pulsectl
+python-pulsectl-asyncio
+python-pynput
