@@ -9,3 +9,5 @@
 # signatures and logs
 **/*.sig
 **/*.log
+
+**/*.whl
