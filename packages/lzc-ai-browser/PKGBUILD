@@ -19,8 +19,8 @@ depends=(
   'libpulse' 'nss' 'nspr' 'pango' 'zstd'
 )
 
-_src_url='https://dl.lazycat.cloud/aibrowser/lzc-ai-browser-linux-x86_64.tar.zst'
-_ai_url='https://dl.lazycat.cloud/aibrowser/extension/lzc-ai-extension-0.9.77-chrome.zip'
+_src_url='https://github.com/MoozIiSP/arch-aur-repo/releases/download/sources-lzc-ai-browser-0.9.77/lzc-ai-browser-linux-x86_64.tar.zst'
+_ai_url='https://github.com/MoozIiSP/arch-aur-repo/releases/download/sources-lzc-ai-browser-0.9.77/lzc-ai-extension-0.9.77-chrome.zip'
 
 install=lzc-ai-browser.install
 source=("${_src_url}" "${_ai_url}")

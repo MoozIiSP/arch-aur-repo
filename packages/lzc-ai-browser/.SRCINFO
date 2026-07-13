@@ -30,8 +30,8 @@ pkgbase = lzc-ai-browser
 	depends = nspr
 	depends = pango
 	depends = zstd
-	source = https://dl.lazycat.cloud/aibrowser/lzc-ai-browser-linux-x86_64.tar.zst
-	source = https://dl.lazycat.cloud/aibrowser/extension/lzc-ai-extension-0.9.77-chrome.zip
+	source = https://github.com/MoozIiSP/arch-aur-repo/releases/download/sources-lzc-ai-browser-0.9.77/lzc-ai-browser-linux-x86_64.tar.zst
+	source = https://github.com/MoozIiSP/arch-aur-repo/releases/download/sources-lzc-ai-browser-0.9.77/lzc-ai-extension-0.9.77-chrome.zip
 	sha256sums = 9b4d27138a1ee5f49b746eb70771d1aed292c4f10db17ecc5a1bd3de1d880882
 	sha256sums = 5acb7d8f754a8b81eebaea630bd3216405c3e6957f3706af78f53bfb4e072d51
 
