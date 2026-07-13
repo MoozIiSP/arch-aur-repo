@@ -6,3 +6,4 @@ python-pulsectl-asyncio
 python-pynput
 python-google-crc32c
 python-pylibsrtp
+google-crc32c
