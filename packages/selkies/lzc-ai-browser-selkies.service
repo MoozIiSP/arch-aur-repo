@@ -1,0 +1,16 @@
+[Unit]
+Description=LCMD AI Browser on the Selkies desktop
+After=graphical-session.target
+Wants=graphical-session.target
+
+[Service]
+Type=simple
+SupplementaryGroups=kmem render video
+Environment=DISPLAY=:1
+Environment=LZC_AI_BROWSER_CDP_PORT=9222
+ExecStart=/usr/bin/lzc-ai-browser-chrome about:blank
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=default.target

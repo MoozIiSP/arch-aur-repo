@@ -1,0 +1,28 @@
+# Maintainer: Mooziisp
+
+pkgname=hermes-lazycat-environment
+pkgver=1
+pkgrel=2
+pkgdesc="Runtime environment for Hermes skills inside a Lazycat Arch container"
+arch=("any")
+url="https://github.com/MoozIiSP/arch-aur-repo"
+license=("MIT")
+depends=(
+  "bash"
+  "ca-certificates"
+  "coreutils"
+  "curl"
+  "gawk"
+  "jq"
+  "lzc-ai-browser"
+  "selkies"
+  "tar"
+)
+
+package() {
+  install -d "${pkgdir}/usr/share/doc/${pkgname}"
+  printf '%s\n' \
+    'This package contains only Arch container runtime dependencies.' \
+    'Hermes skills and MCP configuration are managed outside pacman.' \
+    > "${pkgdir}/usr/share/doc/${pkgname}/README"
+}

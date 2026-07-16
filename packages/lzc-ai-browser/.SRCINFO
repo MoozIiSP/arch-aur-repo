@@ -1,7 +1,7 @@
 pkgbase = lzc-ai-browser
 	pkgdesc = LCMD AI Browser - Chromium-based browser with AI extension and auto-login
 	pkgver = 0.9.77
-	pkgrel = 1
+	pkgrel = 2
 	url = https://lazycatmicroserver.com/aibrowser
 	install = lzc-ai-browser.install
 	arch = x86_64
@@ -32,7 +32,9 @@ pkgbase = lzc-ai-browser
 	depends = zstd
 	source = https://github.com/MoozIiSP/arch-aur-repo/releases/download/sources-lzc-ai-browser-0.9.77/lzc-ai-browser-linux-x86_64.tar.zst
 	source = https://github.com/MoozIiSP/arch-aur-repo/releases/download/sources-lzc-ai-browser-0.9.77/lzc-ai-extension-0.9.77-chrome.zip
+	source = lzc-ai-browser-chrome
 	sha256sums = 9b4d27138a1ee5f49b746eb70771d1aed292c4f10db17ecc5a1bd3de1d880882
 	sha256sums = 5acb7d8f754a8b81eebaea630bd3216405c3e6957f3706af78f53bfb4e072d51
+	sha256sums = SKIP
 
 pkgname = lzc-ai-browser

@@ -71,12 +71,14 @@ jobs:
             python-pasimple
             python-pcmflux
             python-pixelflux
+            hermes-lazycat-environment
             hermes-webui
             lzc-ai-browser
             selkies
           )
 
           for pkg in "${packages[@]}"; do
+            test -d "packages/$pkg" || { echo "missing local package: $pkg" >&2; exit 1; }
             echo "::group::Local package: $pkg"
             runuser -u builder -- bash -lc "cd '$GITHUB_WORKSPACE/packages/$pkg' && makepkg --syncdeps --noconfirm --cleanbuild --clean"
             mapfile -t built < <(find "packages/$pkg" -maxdepth 1 -name '*.pkg.tar.zst' ! -name '*-debug-*' -print)

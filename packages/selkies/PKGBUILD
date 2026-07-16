@@ -3,7 +3,7 @@
 
 pkgname=selkies
 pkgver=0.0.0
-pkgrel=4
+pkgrel=5
 pkgdesc="Open-Source Low-Latency Linux WebRTC HTML5 Remote Desktop Streaming Platform"
 arch=("x86_64")
 url="https://github.com/selkies-project/selkies"
@@ -33,6 +33,7 @@ source=(
   "selkies-xvfb.service"
   "selkies-pulseaudio.service"
   "selkies.service"
+  "lzc-ai-browser-selkies.service"
   "selkies.nginx.conf"
 )
 sha256sums=(
@@ -40,6 +41,7 @@ sha256sums=(
   "a9e8c9b9ac43599dfbf70229ac772e77fadff382c8871eb75571384c74210304"
   "93ff372500022bec87b428b9f75e56e6cd32b8fd803a1f0889b999ec6ba33f40"
   "87160ff88abbc5ede469a4d6a58cb16648008c51821433c4c9f40ac1cd61e49e"
+  SKIP
   "f3e680ac57f699d040fdd6e5ed9364b91b16a6bb5242050e4c3783a081546810"
 )
 
@@ -79,6 +81,7 @@ package() {
   for service in selkies-xvfb selkies-pulseaudio selkies; do
     install -Dm644 "${srcdir}/${service}.service" "${pkgdir}/usr/lib/systemd/system/${service}.service"
   done
+  install -Dm644 "${srcdir}/lzc-ai-browser-selkies.service"     "${pkgdir}/usr/lib/systemd/user/lzc-ai-browser-selkies.service"
 
   install -Dm644 "${srcdir}/selkies.nginx.conf" "${pkgdir}/etc/nginx/conf.d/selkies.conf"
   install -Dm644 "${srcdir}/${_srcname}/LICENSE" "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
