@@ -71,9 +71,6 @@ jobs:
             python-pasimple
             python-pcmflux
             python-pixelflux
-            hermes-lazycat-environment
-            hermes-webui
-            lzc-ai-browser
             selkies
           )
 
