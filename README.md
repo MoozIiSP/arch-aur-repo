@@ -84,3 +84,22 @@ Server = https://github.com/MoozIiSP/arch-aur-repo/releases/download/repository-
 for the repository's earlier AUR build automation. They are not consumed by
 the current validation workflow. The related `patches/linux-cachyos/` files
 are retained for the listed custom kernel package.
+
+## Selkies standalone environment
+
+`selkies` is packaged as a reusable standalone remote-desktop runtime for other Arch-based systems; it is not tied to Hermes, Lazycat, or `lzc-ai-browser`. The package supplies Xvfb, PulseAudio integration, GStreamer media support, Mesa/DRM/OpenGL/Vulkan runtime libraries, the Selkies systemd units, an Nginx WebSocket reverse-proxy config, and `/etc/selkies.env.example`.
+
+Provisioning on a target system:
+
+```bash
+pacman -S selkies
+install -Dm600 /etc/selkies.env.example /etc/selkies.env
+# Edit /etc/selkies.env; put TURN credentials there when needed.
+systemctl enable --now selkies-xvfb.service selkies-pulseaudio.service selkies.service
+```
+
+The target system must expose the GPU render node to the service account through the standard `render`/`video` groups. The package does not change `/dev/dri` permissions, require `kmem`, embed TURN credentials, or assume a LightOS-specific network address.
+
+## Selkies and LightOS
+
+The `selkies` package mirrors the LightOS remote-desktop runtime boundary: Mesa/DRM/OpenGL/Vulkan runtime libraries, Xvfb, PulseAudio, GStreamer, Nginx, GPU supplementary groups, and an `/etc/selkies.env.example` template. LightOS official remote-desktop installation remains the preferred production provisioning path; this package is the standalone Arch packaging path. TURN credentials are runtime-generated and are never stored in the repository.

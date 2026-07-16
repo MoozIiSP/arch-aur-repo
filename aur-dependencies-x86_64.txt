@@ -1,9 +1,7 @@
-# Selkies runtime dependencies not available in Arch official repositories.
+# Selkies runtime dependencies unavailable in the Arch official repositories.
+# Keep this list in topological order; local packages are built by the workflow.
 python-aioice
 python-gputil
 python-pulsectl
 python-pulsectl-asyncio
 python-pynput
-google-crc32c
-python-google-crc32c
-python-pylibsrtp

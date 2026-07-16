@@ -1,15 +1,18 @@
 [Unit]
 Description=Selkies WebRTC Server
-Requires=selkies-xvfb.service
+Requires=selkies-xvfb.service selkies-pulseaudio.service
 After=selkies-pulseaudio.service selkies-xvfb.service
 [Service]
 Type=simple
 Environment=DISPLAY=:1
+EnvironmentFile=-/etc/selkies.env
+SupplementaryGroups=render video
 Environment=SELKIES_USE_CSS_SCALING=true
 Environment=SELKIES_IS_MANUAL_RESOLUTION_MODE=true
 Environment=SELKIES_MANUAL_WIDTH=1920
+Environment=SELKIES_MANUAL_HEIGHT=1080
 Environment=SELKIES_PORT=9091
-Environment=SELKIES_ENABLE_BASIC_AUTH=disabled
+Environment=SELKIES_ENABLE_BASIC_AUTH=false
 Environment=SELKIES_UI_TITLE=Agent
 Environment=SELKIES_UI_SHOW_LOGO=false
 Environment=SELKIES_UI_SIDEBAR_SHOW_APPS=false
