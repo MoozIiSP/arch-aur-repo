@@ -104,7 +104,9 @@ jobs:
       - name: Upload Actions artifact
         run: |
           set -euo pipefail
-          tar -C out -czf "out/${REPO_NAME}-x86_64.tar.gz" .
+          archive="${RUNNER_TEMP}/${REPO_NAME}-x86_64.tar.gz"
+          tar -C out -czf "$archive" .
+          cp "$archive" "out/${REPO_NAME}-x86_64.tar.gz"
 
       - name: Publish Actions artifact
         uses: actions/upload-artifact@v4
