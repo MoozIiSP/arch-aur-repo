@@ -103,3 +103,15 @@ The target system must expose the GPU render node to the service account through
 ## Selkies and LightOS
 
 The `selkies` package mirrors the LightOS remote-desktop runtime boundary: Mesa/DRM/OpenGL/Vulkan runtime libraries, Xvfb, PulseAudio, GStreamer, Nginx, GPU supplementary groups, and an `/etc/selkies.env.example` template. LightOS official remote-desktop installation remains the preferred production provisioning path; this package is the standalone Arch packaging path. TURN credentials are runtime-generated and are never stored in the repository.
+
+## GitHub Pages pacman repository
+
+The build workflow publishes the generated repository directory to GitHub Pages without committing binary packages to `main` or a `gh-pages` branch. Use the Pages URL as the normal pacman source:
+
+```ini
+[moozliisp-arch]
+SigLevel = Optional TrustAll
+Server = https://mooziisp.github.io/arch-aur-repo/x86_64
+```
+
+GitHub Releases remain available as rolling archives and manual-download backups. The first deployment may require enabling GitHub Pages for the repository with **GitHub Actions** as the source.
