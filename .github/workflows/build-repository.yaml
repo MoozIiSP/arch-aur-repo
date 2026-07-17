@@ -102,10 +102,15 @@ jobs:
           sha256sum ./*.pkg.tar.zst ./*.db.tar.gz ./*.files.tar.gz > SHA256SUMS
 
       - name: Upload Actions artifact
+        run: |
+          set -euo pipefail
+          tar -C out -czf "out/${REPO_NAME}-x86_64.tar.gz" .
+
+      - name: Publish Actions artifact
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.REPO_NAME }}-x86_64
-          path: out/
+          path: out/${{ env.REPO_NAME }}-x86_64.tar.gz
           if-no-files-found: error
           retention-days: 14
 
