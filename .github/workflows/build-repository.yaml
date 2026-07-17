@@ -84,9 +84,6 @@ jobs:
           for pkg in "${packages[@]}"; do
             test -d "packages/$pkg" || { echo "missing local package: $pkg" >&2; exit 1; }
             echo "::group::Local package: $pkg"
-            if [[ "$pkg" == selkies ]]; then
-              pacman -T python-aioice python-gputil python-pasimple python-pcmflux python-pixelflux python-pulsectl python-pulsectl-asyncio python-pynput python-google-crc32c python-msgpack python-prometheus_client python-psutil python-pyee python-pylibsrtp python-pyopenssl python-watchdog python-websockets python-xkbcommon python-av python-xlib python-pillow gstreamer gst-plugins-base gst-plugins-good gst-plugins-bad gst-plugins-ugly gst-libav mesa libdrm libglvnd vulkan-icd-loader xorg-server-xvfb nginx
-            fi
             runuser -u builder -- bash -lc "cd '$GITHUB_WORKSPACE/packages/$pkg' && makepkg --syncdeps --noconfirm --cleanbuild --clean"
             mapfile -t built < <(find "packages/$pkg" -maxdepth 1 -name '*.pkg.tar.zst' ! -name '*-debug-*' -print)
             cp "${built[@]}" out/
