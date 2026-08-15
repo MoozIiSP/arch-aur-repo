@@ -1,0 +1,31 @@
+# Maintainer: Mooziisp <mooziisp@example.com>
+# DeepSeek dsh CLI — https://github.com/deepseek-ai/deepseek-harness (apps/cli)
+
+pkgname=deepseek-dsh
+_realver=0.1.0-rc.6
+pkgver=${_realver//-/_}
+pkgrel=1
+pkgdesc="dsh CLI: profile boot, plugin management, and the browser UI alias (DeepSeek Harness)"
+arch=('any')
+url="https://github.com/deepseek-ai/deepseek-harness"
+license=('MIT')
+depends=('nodejs')
+makedepends=('npm')
+options=('!strip')
+source=("dsh-${_realver}.tgz::https://registry.npmjs.org/@deepseek-ai/dsh/-/dsh-${_realver}.tgz")
+sha256sums=('1b8a9a0ad3c7feaece47926e0bd37ca151c7ccfa997953afa5fd01261784eadc')
+
+package() {
+  # 标准 npm 全局安装：usr/lib/node_modules/@deepseek-ai/dsh + /usr/bin/dsh
+  # --ignore-scripts：不执行任意 postinstall（本包无需要脚本）
+  # --userconfig=/dev/null：不读取用户 ~/.npmrc，保证可复现
+  cd "${srcdir}"
+  npm install \
+    --prefix "${pkgdir}/usr" \
+    --global \
+    --omit=dev \
+    --ignore-scripts \
+    --cache "${srcdir}/npm-cache" \
+    --userconfig=/dev/null \
+    "@deepseek-ai/dsh@${_realver}"
+}
