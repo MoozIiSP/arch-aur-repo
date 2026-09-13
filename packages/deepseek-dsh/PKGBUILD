@@ -2,9 +2,9 @@
 # DeepSeek dsh CLI — https://github.com/deepseek-ai/deepseek-harness (apps/cli)
 
 pkgname=deepseek-dsh
-_realver=0.1.0-rc.6
+_realver=0.1.5-rc.1
 pkgver=${_realver//-/_}
-pkgrel=2
+pkgrel=1
 pkgdesc="dsh CLI: profile boot, plugin management, and the browser UI alias (DeepSeek Harness)"
 arch=('x86_64')
 url="https://github.com/deepseek-ai/deepseek-harness"
@@ -12,7 +12,7 @@ license=('MIT')
 depends=('nodejs')
 makedepends=('npm' 'node-gyp' 'python')
 source=("dsh-${_realver}.tgz::https://registry.npmjs.org/@deepseek-ai/dsh/-/dsh-${_realver}.tgz")
-sha256sums=('1b8a9a0ad3c7feaece47926e0bd37ca151c7ccfa997953afa5fd01261784eadc')
+sha256sums=('1a79719f1c763918ac30e8194df783a9330c6b12d5f04c950731a3f8a1c3d9d0')
 
 package() {
   # Install the dependency tree without executing arbitrary lifecycle scripts.

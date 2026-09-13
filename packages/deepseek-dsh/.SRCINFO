@@ -1,7 +1,7 @@
 pkgbase = deepseek-dsh
 	pkgdesc = dsh CLI: profile boot, plugin management, and the browser UI alias (DeepSeek Harness)
-	pkgver = 0.1.0_rc.6
-	pkgrel = 2
+	pkgver = 0.1.5_rc.1
+	pkgrel = 1
 	url = https://github.com/deepseek-ai/deepseek-harness
 	arch = x86_64
 	license = MIT
@@ -9,7 +9,7 @@ pkgbase = deepseek-dsh
 	makedepends = node-gyp
 	makedepends = python
 	depends = nodejs
-	source = dsh-0.1.0-rc.6.tgz::https://registry.npmjs.org/@deepseek-ai/dsh/-/dsh-0.1.0-rc.6.tgz
-	sha256sums = 1b8a9a0ad3c7feaece47926e0bd37ca151c7ccfa997953afa5fd01261784eadc
+	source = dsh-0.1.5-rc.1.tgz::https://registry.npmjs.org/@deepseek-ai/dsh/-/dsh-0.1.5-rc.1.tgz
+	sha256sums = 1a79719f1c763918ac30e8194df783a9330c6b12d5f04c950731a3f8a1c3d9d0
 
 pkgname = deepseek-dsh
