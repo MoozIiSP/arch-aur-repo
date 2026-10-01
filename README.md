@@ -15,7 +15,7 @@ packages-aarch64.txt      Legacy AUR build list for aarch64
 
 | Package | Architecture | Source |
 |---|---|---|
-| `deepseek-dsh` | `any` | [`packages/deepseek-dsh`](packages/deepseek-dsh) |
+| `deepseek-dsh` | `x86_64` | [`packages/deepseek-dsh`](packages/deepseek-dsh) |
 | `hermes-lazycat-environment` | `any` | [`packages/hermes-lazycat-environment`](packages/hermes-lazycat-environment) |
 | `lzc-ai-browser` | `x86_64` | [`packages/lzc-ai-browser`](packages/lzc-ai-browser) |
 | `selkies` | `x86_64` | [`packages/selkies`](packages/selkies) |
