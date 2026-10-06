@@ -1,7 +1,7 @@
 pkgbase = hermes-lazycat-environment
 	pkgdesc = Runtime environment for Hermes skills inside a Lazycat Arch container
 	pkgver = 1
-	pkgrel = 2
+	pkgrel = 3
 	url = https://github.com/MoozIiSP/arch-aur-repo
 	arch = any
 	license = MIT
@@ -11,8 +11,8 @@ pkgbase = hermes-lazycat-environment
 	depends = curl
 	depends = gawk
 	depends = jq
-	depends = lzc-ai-browser
 	depends = selkies
 	depends = tar
+	optdepends = lzc-ai-browser: packaged Lazycat AI Browser on the Selkies desktop (optional; any CDP-capable Chromium works)
 
 pkgname = hermes-lazycat-environment

@@ -2,7 +2,7 @@
 
 pkgname=hermes-lazycat-environment
 pkgver=1
-pkgrel=2
+pkgrel=3
 pkgdesc="Runtime environment for Hermes skills inside a Lazycat Arch container"
 arch=("any")
 url="https://github.com/MoozIiSP/arch-aur-repo"
@@ -14,9 +14,15 @@ depends=(
   "curl"
   "gawk"
   "jq"
-  "lzc-ai-browser"
   "selkies"
   "tar"
+)
+# Optional, NOT required: lzc-ai-browser is the packaged Lazycat AI Browser for the
+# Selkies desktop. Any Chromium-family browser exposing a CDP endpoint (for example
+# google-chrome) can substitute for the local browsing / automation use case, so it
+# must not be a hard dependency of this environment meta-package.
+optdepends=(
+  "lzc-ai-browser: packaged Lazycat AI Browser on the Selkies desktop (optional; any CDP-capable Chromium works)"
 )
 
 package() {
