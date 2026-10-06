@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+set -euo pipefail
+chrome=/opt/lzc-ai-browser/chrome-linux/chrome
+config_home="${XDG_CONFIG_HOME:-$HOME/.config}"
+profile="${LZC_AI_BROWSER_PROFILE:-$config_home/lzc-ai-browser/profile}"
+extensions=/opt/lzc-ai-browser/extensions
+args=(--user-data-dir="$profile" --no-first-run --no-default-browser-check)
+# Keep GPU enabled when the mapped Intel render node is usable. Xvfb alone is
+# not a reason to disable GPU; the render node is the capability signal.
+case "${LZC_AI_BROWSER_DISABLE_GPU:-auto}" in
+  1|yes|true) args+=(--disable-gpu) ;;
+  0|no|false) : ;;
+  auto)
+    if [[ ! -e /dev/dri/renderD128 || ! -r /dev/dri/renderD128 || ! -w /dev/dri/renderD128 ]]; then
+      args+=(--disable-gpu)
+    else
+      # Xvfb does not expose Vulkan X11 surface extensions. Use the Intel
+      # render node through EGL/GL instead of letting ANGLE select Vulkan.
+      args+=(--disable-vulkan --use-gl=egl)
+    fi
+    ;;
+  *) echo "lzc-ai-browser-chrome: invalid LZC_AI_BROWSER_DISABLE_GPU value" >&2; exit 64 ;;
+esac
+[[ -n "${LZC_AI_BROWSER_CDP_PORT:-}" ]] && args+=(--remote-debugging-address=127.0.0.1 --remote-debugging-port="$LZC_AI_BROWSER_CDP_PORT")
+[[ -d "$extensions/lazycat-autologin" ]] && args+=(--load-extension="$extensions/lazycat-autologin,$extensions/cloud.lazycat.app.ai")
+mkdir -p "$profile"
+exec "$chrome" "${args[@]}" "$@"
