@@ -104,13 +104,20 @@ jobs:
           ln -sfn "${REPO_NAME}.files.tar.gz" "${REPO_NAME}.files"
           sha256sum ./*.pkg.tar.zst ./*.db.tar.gz ./*.files.tar.gz > SHA256SUMS
 
+      - name: Stage GitHub Pages site
+        run: |
+          set -euo pipefail
+          rm -rf pages-site
+          install -d pages-site/x86_64
+          cp -a out/. pages-site/x86_64/
+
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
 
       - name: Upload pacman repository to Pages
         uses: actions/upload-pages-artifact@v3
         with:
-          path: out/
+          path: pages-site/
 
       - name: Deploy pacman repository to Pages
         id: deployment
