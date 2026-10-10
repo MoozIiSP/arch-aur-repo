@@ -8,3 +8,5 @@ python-pynput
 google-crc32c
 python-google-crc32c
 python-pylibsrtp
+# Cloudflare CLI (cf), published from the AUR.
+cloudflare-cf
