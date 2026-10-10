@@ -105,11 +105,69 @@ jobs:
           sha256sum ./*.pkg.tar.zst ./*.db.tar.gz ./*.files.tar.gz > SHA256SUMS
 
       - name: Stage GitHub Pages site
+        env:
+          REPO_NAME: ${{ env.REPO_NAME }}
+          REPO_SLUG: ${{ github.repository }}
         run: |
           set -euo pipefail
           rm -rf pages-site
           install -d pages-site/x86_64
           cp -a out/. pages-site/x86_64/
+
+          {
+            cat <<HTML
+          <!doctype html>
+          <html lang="zh-CN">
+          <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+            <title>${REPO_NAME} · Arch Linux 软件源</title>
+            <style>
+              body { font: 16px/1.6 system-ui, sans-serif; max-width: 52rem; margin: 2rem auto; padding: 0 1rem; color: #1f2328; }
+              pre { background: #f6f8fa; padding: 1rem; overflow-x: auto; border-radius: 6px; }
+              code { font-family: ui-monospace, monospace; }
+              table { border-collapse: collapse; width: 100%; }
+              td, th { border-bottom: 1px solid #d0d7de; padding: .4rem .6rem; text-align: left; }
+            </style>
+          </head>
+          <body>
+            <h1>${REPO_NAME}</h1>
+            <p>Arch Linux pacman 软件源（x86_64），由 GitHub Actions 自动构建。源码仓库：<a href="https://github.com/${REPO_SLUG}">${REPO_SLUG}</a></p>
+            <h2>配置</h2>
+            <p>在 <code>/etc/pacman.conf</code> 中加入：</p>
+            <pre>[${REPO_NAME}]
+          SigLevel = Optional TrustAll
+          Server = https://mooziisp.github.io/arch-aur-repo/x86_64</pre>
+            <p>然后执行 <code>sudo pacman -Sy</code>。</p>
+            <h2>软件包</h2>
+            <table>
+              <tr><th>包名</th><th>版本</th><th>文件</th></tr>
+          HTML
+            for f in out/*.pkg.tar.zst; do
+              [ -e "$f" ] || continue
+              base=$(basename "$f")
+              # Filename: <name>-<pkgver>-<pkgrel>-<arch>.pkg.tar.zst
+              stem=${base%.pkg.tar.zst}     # <name>-<pkgver>-<pkgrel>-<arch>
+              stem=${stem%-*}               # <name>-<pkgver>-<pkgrel>
+              rel=${stem##*-}               # <pkgrel>
+              stem=${stem%-*}               # <name>-<pkgver>
+              pkg=$(echo "$stem" | sed -E 's/-[^-]+$//')
+              ver="${stem#"$pkg"-}-$rel"
+              printf '              <tr><td>%s</td><td>%s</td><td><a href="%s">%s</a></td></tr>\n' "$pkg" "$ver" "$base" "$base"
+            done
+            cat <<HTML
+            </table>
+            <h2>数据库文件</h2>
+            <ul>
+              <li><a href="x86_64/${REPO_NAME}.db.tar.gz">${REPO_NAME}.db.tar.gz</a></li>
+              <li><a href="x86_64/${REPO_NAME}.files.tar.gz">${REPO_NAME}.files.tar.gz</a></li>
+              <li><a href="x86_64/SHA256SUMS">SHA256SUMS</a></li>
+            </ul>
+          </body>
+          </html>
+          HTML
+          } > pages-site/index.html
+          test -s pages-site/index.html
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
